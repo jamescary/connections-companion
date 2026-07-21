@@ -3,3 +3,4 @@ web-ext-artifacts/
 .playwright-mcp/
 node_modules/
 .DS_Store
+.amo-keys
