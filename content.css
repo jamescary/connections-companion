@@ -42,7 +42,11 @@ label[data-cc-error="true"] {
   user-select: none;
   touch-action: none;
 }
-#cc-header .cc-chevron { font-weight: 400; opacity: 0.8; }
+#cc-header .cc-header-right { display: flex; align-items: center; gap: 8px; }
+#cc-header .cc-chevron { font-weight: 400; opacity: 0.8; transition: transform 0.15s ease; }
+#cc-panel.cc-collapsed .cc-chevron { transform: rotate(-90deg); }
+.cc-badge { display: none; font-weight: 400; font-size: 12px; opacity: 0.85; }
+#cc-panel.cc-collapsed .cc-badge { display: inline; }
 #cc-body { padding: 10px 12px 12px; }
 #cc-panel.cc-collapsed #cc-body { display: none; }
 
@@ -59,6 +63,7 @@ label[data-cc-error="true"] {
   min-height: 52px;
 }
 .cc-row[data-status="error"] { border-color: #d33030; background: #fdeeee; }
+.cc-row[data-status="submitting"] { border-color: #121212; background: #f4f4f4; }
 .cc-row[data-status="solved"] { opacity: 0.75; }
 
 .cc-swatch {
@@ -122,3 +127,41 @@ label[data-cc-error="true"] {
 }
 #cc-status.cc-error { color: #b02a2a; font-weight: 600; }
 #cc-status.cc-success { color: #1a7a2e; font-weight: 600; }
+
+/* Keyboard focus */
+#cc-panel button:focus-visible,
+#cc-header:focus-visible {
+  outline: 2px solid #4a7fe8;
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  label[data-cc-error="true"] { animation: none; }
+  #cc-header .cc-chevron { transition: none; }
+}
+
+/* Dark mode (follows the OS/browser preference) */
+@media (prefers-color-scheme: dark) {
+  #cc-panel {
+    background: #1f1f1f;
+    border-color: #3a3a3a;
+    color: #ececec;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.5);
+  }
+  #cc-header { background: #000; }
+  .cc-hint { color: #a5a5a5; }
+  .cc-row { border-color: #3a3a3a; }
+  .cc-row[data-status="error"] { border-color: #e05252; background: #3a1f1f; }
+  .cc-row[data-status="submitting"] { border-color: #ececec; background: #2a2a2a; }
+  .cc-row-words { color: #c4c4c4; }
+  .cc-row-note { color: #ff9c9c; }
+  .cc-x { color: #999; }
+  .cc-x:hover { color: #ff6b6b; }
+  .cc-btn { background: #ececec; border-color: #ececec; color: #121212; }
+  .cc-btn:disabled { background: #555; border-color: #555; color: #1f1f1f; }
+  .cc-btn.cc-secondary { background: transparent; color: #ececec; border-color: #ececec; }
+  .cc-btn.cc-secondary:disabled { color: #777; border-color: #555; background: transparent; }
+  #cc-status { color: #d6d6d6; }
+  #cc-status.cc-error { color: #ff9c9c; }
+  #cc-status.cc-success { color: #7fd191; }
+}

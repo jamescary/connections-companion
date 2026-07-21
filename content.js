@@ -175,6 +175,8 @@
     try {
       for (const color of queue) {
         const g = groups[color.key];
+        g.status = "submitting";
+        render();
         setStatus(`Submitting ${color.label}…`);
         if (!(await selectGroup(g.words))) {
           g.status = "error";
@@ -229,6 +231,9 @@
       else setStatus("All groups solved — reverse rainbow run complete! 🌈", "success");
     } finally {
       running = false;
+      for (const c of COLORS) {
+        if (groups[c.key].status === "submitting") groups[c.key].status = "assigned";
+      }
       render();
     }
   }
@@ -246,7 +251,9 @@
       row.querySelector(".cc-row-note").textContent = g.note;
       const title = row.querySelector(".cc-row-title");
       title.textContent = c.label + (g.status === "solved" ? " ✓" : g.status === "error" ? " ✗" : "");
-      row.querySelector(".cc-swatch").disabled = running || g.status === "solved";
+      const swatch = row.querySelector(".cc-swatch");
+      swatch.disabled = running || g.status === "solved";
+      swatch.textContent = g.status === "empty" ? "+" : "✓";
       row.querySelector(".cc-x").style.visibility =
         !running && (g.status === "assigned" || g.status === "error") ? "visible" : "hidden";
       markTiles(c.key, g.words.length > 0 && g.status !== "solved");
@@ -260,6 +267,9 @@
     }
     const clear = $("#cc-clear");
     if (clear) clear.disabled = running;
+    const banked = COLORS.filter(c => groups[c.key].status !== "empty").length;
+    const badge = $("#cc-badge");
+    if (badge) badge.textContent = banked ? `${banked}/4` : "";
   }
 
   // Drag the panel by its header; a plain click (no movement) toggles
@@ -268,6 +278,8 @@
     const KEY = "cc-panel-state";
     let saved = {};
     try { saved = JSON.parse(localStorage.getItem(KEY)) || {}; } catch { /* fresh start */ }
+    header.setAttribute("role", "button");
+    header.tabIndex = 0;
     const apply = () => {
       if (typeof saved.left === "number") {
         panel.style.left = Math.min(Math.max(saved.left, 0), window.innerWidth - 80) + "px";
@@ -276,6 +288,7 @@
         panel.style.bottom = "auto";
       }
       panel.classList.toggle("cc-collapsed", !!saved.collapsed);
+      header.setAttribute("aria-expanded", String(!saved.collapsed));
     };
     apply();
     const save = () => { try { localStorage.setItem(KEY, JSON.stringify(saved)); } catch { /* private mode */ } };
@@ -305,6 +318,13 @@
       save();
       drag = null;
     });
+    header.addEventListener("keydown", e => {
+      if (e.key !== "Enter" && e.key !== " ") return;
+      e.preventDefault();
+      saved.collapsed = !panel.classList.contains("cc-collapsed");
+      apply();
+      save();
+    });
   }
 
   function buildPanel() {
@@ -315,7 +335,7 @@
     const header = document.createElement("div");
     header.id = "cc-header";
     header.title = "Drag to move · click to collapse";
-    header.innerHTML = `<span>Connections Companion</span><span class="cc-chevron">▾</span>`;
+    header.innerHTML = `<span>Connections Companion</span><span class="cc-header-right"><span id="cc-badge" class="cc-badge"></span><span class="cc-chevron">▾</span></span>`;
     panel.appendChild(header);
     makeDraggable(panel, header);
 
@@ -335,6 +355,7 @@
       swatch.className = "cc-swatch";
       swatch.style.background = c.hex;
       swatch.title = `Assign selected tiles to ${c.label}`;
+      swatch.setAttribute("aria-label", `Assign selected tiles to ${c.label}`);
       swatch.textContent = "+";
       swatch.addEventListener("click", () => assign(c.key));
       const main = document.createElement("div");
@@ -344,6 +365,7 @@
       x.type = "button";
       x.className = "cc-x";
       x.title = `Reset ${c.label} group`;
+      x.setAttribute("aria-label", `Reset ${c.label} group`);
       x.textContent = "✕";
       x.addEventListener("click", () => clearGroup(c.key));
       row.append(swatch, main, x);
@@ -368,6 +390,8 @@
 
     const status = document.createElement("div");
     status.id = "cc-status";
+    status.setAttribute("role", "status");
+    status.setAttribute("aria-live", "polite");
     body.appendChild(status);
 
     panel.appendChild(body);
