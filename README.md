@@ -1,10 +1,13 @@
 # Connections Companion
 
-A Firefox extension for NYT Connections that helps you earn the **reverse
-rainbow badge**: plan all four groups up front, assign each one a color, then
-submit them all at once in Purple → Blue → Green → Yellow order. If any
-submission is wrong, the run stops immediately — the bad group is marked red
-and no further guesses are spent until you fix it and submit again.
+A browser extension (Firefox, Chrome, Safari) for NYT Connections that helps
+you earn the **reverse rainbow badge**: plan all four groups up front, assign
+each one a color, then submit them all at once in Purple → Blue → Green →
+Yellow order. If any submission is wrong, the run stops immediately — the bad
+group is marked red and no further guesses are spent until you fix it and
+submit again.
+
+![Connections Companion panel alongside the NYT Connections board](screenshot.jpg)
 
 ## Build (Firefox + Chromium packages)
 
