@@ -1,0 +1,33 @@
+{
+  "manifest_version": 3,
+  "name": "Connections Companion",
+  "version": "0.1.1",
+  "description": "Plan your NYT Connections groups, assign colors, and auto-submit in reverse rainbow order. Pauses on any miss to save your guesses.",
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "connections-companion@jamescary.dev",
+      "strict_min_version": "140.0",
+      "data_collection_permissions": {
+        "required": ["none"]
+      }
+    }
+  },
+  "icons": {
+    "16": "images/icon-16.png",
+    "32": "images/icon-32.png",
+    "48": "images/icon-48.png",
+    "64": "images/icon-64.png",
+    "96": "images/icon-96.png",
+    "128": "images/icon-128.png",
+    "256": "images/icon-256.png",
+    "512": "images/icon-512.png"
+  },
+  "content_scripts": [
+    {
+      "matches": ["*://www.nytimes.com/games/connections*"],
+      "js": ["content.js"],
+      "css": ["content.css"],
+      "run_at": "document_idle"
+    }
+  ]
+}
