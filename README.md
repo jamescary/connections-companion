@@ -9,6 +9,12 @@ submit again.
 
 ![Connections Companion panel alongside the NYT Connections board](screenshot.jpg)
 
+## Install from a release (no build needed)
+
+Grab the latest signed Firefox `.xpi` or Chromium `.zip` from
+[Releases](https://github.com/jamescary/connections-companion/releases) —
+install instructions are in each release's notes.
+
 ## Build (Firefox + Chromium packages)
 
 ```sh
