@@ -32,6 +32,8 @@
   const groups = {};
   for (const c of COLORS) groups[c.key] = { words: [], status: "empty", note: "" };
   let running = false;
+  // Color key armed as the source of a swap, or null when not in swap mode.
+  let swapFrom = null;
 
   const sleep = ms => new Promise(r => setTimeout(r, ms));
   const $ = s => document.querySelector(s);
@@ -91,6 +93,48 @@
 
   // ---------- assignment / reset ----------
 
+  const labelOf = key => COLORS.find(c => c.key === key).label;
+
+  function onSwatch(key) {
+    if (running) return;
+    if (swapFrom) {
+      if (swapFrom === key) {
+        swapFrom = null;
+        render();
+        setStatus("Swap cancelled.");
+      } else {
+        swapGroups(swapFrom, key);
+      }
+      return;
+    }
+    // A banked group's swatch, clicked with nothing selected on the board,
+    // arms a swap instead of complaining about the empty selection.
+    if (groups[key].status !== "empty" && selectedWords().length === 0) {
+      swapFrom = key;
+      render();
+      setStatus(`Swapping ${labelOf(key)} — click another swatch to trade colors, or ${labelOf(key)} again to cancel.`);
+      return;
+    }
+    assign(key);
+  }
+
+  function swapGroups(a, b) {
+    markTiles(a, false);
+    markTiles(b, false);
+    const wordsA = groups[a].words;
+    const wordsB = groups[b].words;
+    groups[a] = { words: wordsB, status: wordsB.length ? "assigned" : "empty", note: "" };
+    groups[b] = { words: wordsA, status: wordsA.length ? "assigned" : "empty", note: "" };
+    swapFrom = null;
+    render();
+    setStatus(
+      wordsB.length
+        ? `Swapped ${labelOf(a)} ↔ ${labelOf(b)}.`
+        : `Moved ${labelOf(a)} to ${labelOf(b)}.`,
+      "success"
+    );
+  }
+
   function assign(key) {
     if (running) return;
     const words = selectedWords();
@@ -115,6 +159,7 @@
     if (running) return;
     const g = groups[key];
     if (g.status === "solved") return;
+    if (swapFrom === key) swapFrom = null;
     markTiles(key, false);
     groups[key] = { words: [], status: "empty", note: "" };
     if (!quiet) { render(); setStatus(""); }
@@ -170,6 +215,7 @@
       setStatus("Nothing to submit — assign at least one group.", "error");
       return;
     }
+    swapFrom = null;
     running = true;
     render();
     try {
@@ -253,7 +299,15 @@
       title.textContent = c.label + (g.status === "solved" ? " ✓" : g.status === "error" ? " ✗" : "");
       const swatch = row.querySelector(".cc-swatch");
       swatch.disabled = running || g.status === "solved";
-      swatch.textContent = g.status === "empty" ? "+" : "✓";
+      swatch.textContent = swapFrom === c.key ? "⇄" : g.status === "empty" ? "+" : "✓";
+      const swatchHint = swapFrom
+        ? (swapFrom === c.key ? `Cancel swap` : `Swap ${labelOf(swapFrom)} with ${c.label}`)
+        : g.status === "empty"
+          ? `Assign selected tiles to ${c.label}`
+          : `Reassign selected tiles, or click with none selected to swap ${c.label} with another color`;
+      swatch.title = swatchHint;
+      swatch.setAttribute("aria-label", swatchHint);
+      row.classList.toggle("cc-swap-source", swapFrom === c.key);
       row.querySelector(".cc-x").style.visibility =
         !running && (g.status === "assigned" || g.status === "error") ? "visible" : "hidden";
       markTiles(c.key, g.words.length > 0 && g.status !== "solved");
@@ -343,7 +397,7 @@
     body.id = "cc-body";
     const hint = document.createElement("p");
     hint.className = "cc-hint";
-    hint.textContent = "Select 4 tiles on the board, then click a swatch to bank them. Submits Purple → Blue → Green → Yellow, and pauses on any miss.";
+    hint.textContent = "Select 4 tiles on the board, then click a swatch to bank them. Click a banked swatch (nothing selected) to swap two colors. Submits Purple → Blue → Green → Yellow, and pauses on any miss.";
     body.appendChild(hint);
 
     for (const c of COLORS) {
@@ -357,7 +411,7 @@
       swatch.title = `Assign selected tiles to ${c.label}`;
       swatch.setAttribute("aria-label", `Assign selected tiles to ${c.label}`);
       swatch.textContent = "+";
-      swatch.addEventListener("click", () => assign(c.key));
+      swatch.addEventListener("click", () => onSwatch(c.key));
       const main = document.createElement("div");
       main.className = "cc-row-main";
       main.innerHTML = `<div class="cc-row-title"></div><div class="cc-row-words"></div><div class="cc-row-note"></div>`;

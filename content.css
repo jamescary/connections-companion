@@ -63,6 +63,8 @@ label[data-cc-error="true"] {
   min-height: 52px;
 }
 .cc-row[data-status="error"] { border-color: #d33030; background: #fdeeee; }
+.cc-row.cc-swap-source { border-color: #4a7fe8; background: #eef3fd; }
+.cc-row.cc-swap-source .cc-swatch { outline: 2px solid #4a7fe8; outline-offset: 2px; }
 .cc-row[data-status="submitting"] { border-color: #121212; background: #f4f4f4; }
 .cc-row[data-status="solved"] { opacity: 0.75; }
 
@@ -152,6 +154,8 @@ label[data-cc-error="true"] {
   .cc-hint { color: #a5a5a5; }
   .cc-row { border-color: #3a3a3a; }
   .cc-row[data-status="error"] { border-color: #e05252; background: #3a1f1f; }
+  .cc-row.cc-swap-source { border-color: #7ba3f0; background: #1f2a40; }
+  .cc-row.cc-swap-source .cc-swatch { outline-color: #7ba3f0; }
   .cc-row[data-status="submitting"] { border-color: #ececec; background: #2a2a2a; }
   .cc-row-words { color: #c4c4c4; }
   .cc-row-note { color: #ff9c9c; }

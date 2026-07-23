@@ -53,6 +53,11 @@ the folder and sign it via [addons.mozilla.org](https://addons.mozilla.org)
 1. Select 4 tiles on the board like normal, then click a color swatch in the
    panel to bank them as your guess for that color. Banked tiles get a colored
    outline; repeat for all four colors.
+
+   To swap two colors, click a banked group's swatch with nothing selected on
+   the board — it arms for a swap (⇄) — then click another swatch to trade.
+   Clicking an empty color instead moves the group there; clicking the same
+   swatch again cancels.
 2. Click **Submit in 🌈 reverse**. The extension deselects, selects each banked
    group, and submits — Purple first, then Blue, Green, Yellow — waiting for
    the game to confirm each result before continuing.

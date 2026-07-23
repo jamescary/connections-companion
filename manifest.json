@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Connections Companion",
-  "version": "0.1.3",
+  "version": "0.1.5",
   "description": "Plan your NYT Connections groups, assign colors, and auto-submit in reverse rainbow order. Pauses on any miss to save your guesses.",
   "browser_specific_settings": {
     "gecko": {
